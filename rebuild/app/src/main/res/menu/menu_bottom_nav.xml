@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:title="@string/nav_home"
+        android:icon="@android:drawable/ic_menu_view" />
+    <item
+        android:id="@+id/nav_playlist"
+        android:title="@string/nav_playlist"
+        android:icon="@android:drawable/ic_menu_agenda" />
+    <item
+        android:id="@+id/nav_channels"
+        android:title="@string/nav_channels"
+        android:icon="@android:drawable/ic_menu_slideshow" />
+    <item
+        android:id="@+id/nav_favorites"
+        android:title="@string/nav_favorites"
+        android:icon="@android:drawable/btn_star_big_on" />
+    <item
+        android:id="@+id/nav_settings"
+        android:title="@string/nav_settings"
+        android:icon="@android:drawable/ic_menu_preferences" />
+</menu>
