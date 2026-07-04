@@ -1,0 +1,47 @@
+name: Unzip Archive
+
+on:
+  workflow_dispatch:
+    inputs:
+      zip_path:
+        description: 'Path to the zip file inside the repo'
+        required: true
+        default: 'archive.zip'
+      extract_to:
+        description: 'Destination folder for extracted contents'
+        required: true
+        default: '.'
+  push:
+    paths:
+      - '**.zip'
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine zip target
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "zip_path=${{ inputs.zip_path }}" >> "$GITHUB_OUTPUT"
+            echo "extract_to=${{ inputs.extract_to }}" >> "$GITHUB_OUTPUT"
+          else
+            CHANGED_ZIP=$(git diff --name-only HEAD^ HEAD | grep '\.zip$' | head -n 1)
+            echo "zip_path=$CHANGED_ZIP" >> "$GITHUB_OUTPUT"
+            echo "extract_to=." >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Unzip archive
+        run: |
+          mkdir -p "${{ steps.target.outputs.extract_to }}"
+          unzip -o "${{ steps.target.outputs.zip_path }}" -d "${{ steps.target.outputs.extract_to }}"
+
+      - name: Commit extracted files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Extract $(basename ${{ steps.target.outputs.zip_path }})"
+          git push
