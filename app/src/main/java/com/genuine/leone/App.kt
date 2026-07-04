@@ -26,12 +26,12 @@ class App : Application() {
             .setMinimumFetchIntervalInSeconds(3600)
             .build()
         remoteConfig.setConfigSettingsAsync(settings)
-        remoteConfig.setDefaultsAsync(
-            mapOf(
-                "min_supported_version" to BuildConfig.VERSION_NAME,
-                "update_url" to "https://example.com/update-placeholder"
-            )
+
+        val defaults: Map<String, Any> = mapOf(
+            "min_supported_version" to BuildConfig.VERSION_NAME,
+            "update_url" to "https://example.com/update-placeholder"
         )
+        remoteConfig.setDefaultsAsync(defaults)
         remoteConfig.fetchAndActivate()
     }
 
