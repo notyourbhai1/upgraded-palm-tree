@@ -55,9 +55,8 @@ object M3uParser {
                 }
                 line.startsWith("#") -> Unit
                 line.isNotBlank() -> {
-                    if (drmLicense != null && drmSchema == null) {
-                        drmSchema = inferDrmSchema(drmLicense)
-                    }
+                    val currentDrmLicense = drmLicense
+                    val currentDrmSchema = drmSchema ?: currentDrmLicense?.let { inferDrmSchema(it) }
                     result.add(
                         ContentBean(
                             name = name.ifBlank { "Unnamed" },
@@ -68,8 +67,8 @@ object M3uParser {
                             referer = referer,
                             origin = origin,
                             cookie = cookie,
-                            drmLicense = drmLicense,
-                            drmSchema = drmSchema,
+                            drmLicense = currentDrmLicense,
+                            drmSchema = currentDrmSchema,
                             tvgId = tvgId
                         )
                     )
