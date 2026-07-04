@@ -1,0 +1,4 @@
+-keep class com.genuine.leone.model.** { *; }
+-keep class com.genuine.leone.data.entities.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
