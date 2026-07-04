@@ -13,7 +13,6 @@ import androidx.media3.exoplayer.drm.DefaultDrmSessionManager
 import androidx.media3.exoplayer.drm.FrameworkMediaDrm
 import androidx.media3.exoplayer.drm.HttpMediaDrmCallback
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.ui.PlayerView
 import com.genuine.leone.databinding.ActivityPlayerBinding
 import com.genuine.leone.model.Stream
@@ -65,7 +64,10 @@ class PlayerActivity : AppCompatActivity() {
     private fun initializePlayer(stream: Stream) {
         val dataSourceFactory = buildHttpDataSourceFactory(stream)
         val mediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
-        buildDrmSessionManager(stream)?.let { mediaSourceFactory.setDrmSessionManagerProvider { it } }
+        val drmSessionManager = buildDrmSessionManager(stream)
+        if (drmSessionManager != null) {
+            mediaSourceFactory.setDrmSessionManagerProvider { drmSessionManager }
+        }
 
         val exoPlayer = ExoPlayer.Builder(this)
             .setMediaSourceFactory(mediaSourceFactory)
