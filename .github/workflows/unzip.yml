@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       zip_path:
-        description: 'Path to the zip file inside the repo'
-        required: true
-        default: 'archive.zip'
+        description: 'Path to a specific zip file (leave blank to auto-detect)'
+        required: false
+        default: ''
       extract_to:
         description: 'Destination folder for extracted contents'
         required: true
@@ -14,6 +14,9 @@ on:
   push:
     paths:
       - '**.zip'
+
+permissions:
+  contents: write
 
 jobs:
   unzip:
@@ -25,13 +28,24 @@ jobs:
         id: target
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "zip_path=${{ inputs.zip_path }}" >> "$GITHUB_OUTPUT"
+            INPUT_PATH="${{ inputs.zip_path }}"
+            if [ -n "$INPUT_PATH" ]; then
+              ZIP_PATH="$INPUT_PATH"
+            else
+              ZIP_PATH=$(find . -name '*.zip' -not -path './.git/*' | head -n 1)
+            fi
             echo "extract_to=${{ inputs.extract_to }}" >> "$GITHUB_OUTPUT"
           else
-            CHANGED_ZIP=$(git diff --name-only HEAD^ HEAD | grep '\.zip$' | head -n 1)
-            echo "zip_path=$CHANGED_ZIP" >> "$GITHUB_OUTPUT"
+            ZIP_PATH=$(git diff --name-only HEAD^ HEAD | grep '\.zip$' | head -n 1)
             echo "extract_to=." >> "$GITHUB_OUTPUT"
           fi
+
+          if [ -z "$ZIP_PATH" ]; then
+            echo "No zip file found" >&2
+            exit 1
+          fi
+
+          echo "zip_path=$ZIP_PATH" >> "$GITHUB_OUTPUT"
 
       - name: Unzip archive
         run: |
