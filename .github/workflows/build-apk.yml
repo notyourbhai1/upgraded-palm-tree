@@ -23,6 +23,7 @@ jobs:
 
       - name: Ensure google-services.json exists
         run: |
+          mkdir -p app
           if [ ! -f app/google-services.json ]; then
             cat > app/google-services.json << 'EOF'
           {
@@ -57,11 +58,11 @@ jobs:
           EOF
           fi
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug --no-daemon
+        run: gradle assembleDebug --no-daemon
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
